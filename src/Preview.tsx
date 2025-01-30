@@ -24,7 +24,7 @@ function Preview() {
 
     const fetchWebsite = async () => {
       try {
-        const response = await fetch('http://localhost:2121/', {
+        const response = await fetch('https://webgen-backend.vercel.app/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
