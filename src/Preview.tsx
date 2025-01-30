@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2, Terminal, Download } from 'lucide-react';
 
 function Preview() {
-  const [searchParams] = useSearchParams();
-  const prompt = searchParams.get('prompt');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const prompt = location.state?.prompt;
   const [loadingStep, setLoadingStep] = useState(0);
   const [dots, setDots] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +21,12 @@ function Preview() {
   ];
 
   useEffect(() => {
+    // If no prompt is provided, redirect back to home
+    if (!prompt) {
+      navigate('/');
+      return;
+    }
+
     const controller = new AbortController();
 
     const fetchWebsite = async () => {
@@ -29,7 +36,7 @@ function Preview() {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ prompt: prompt || 'Create a simple website' }),
+          body: JSON.stringify({ prompt }),
           signal: controller.signal
         });
 
@@ -64,11 +71,11 @@ function Preview() {
     fetchWebsite();
 
     return () => {
-      controller.abort(); // Cancel the fetch if component unmounts
+      controller.abort();
       clearInterval(dotsInterval);
       clearInterval(stepInterval);
     };
-  }, []); // Empty dependency array since we only want to fetch once
+  }, [prompt, navigate]);
 
   const handleDownload = () => {
     const blob = new Blob([generatedHtml], { type: 'text/html' });
@@ -83,7 +90,7 @@ function Preview() {
   };
 
   const handleRetry = () => {
-    window.location.reload(); // Simple reload for retry
+    window.location.reload();
   };
 
   if (error) {

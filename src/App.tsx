@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Terminal, ArrowRight, Github } from 'lucide-react';
 
 function App() {
   const [prompt, setPrompt] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate redirect to preview - in real app, this would go to your preview URL
-    window.location.href = `/preview?prompt=${encodeURIComponent(prompt)}`;
+    // Use navigate with state instead of URL parameters
+    navigate('/preview', { state: { prompt } });
   };
 
   return (
